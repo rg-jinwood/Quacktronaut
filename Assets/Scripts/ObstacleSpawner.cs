@@ -1,18 +1,31 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class ObstacleSpawner : MonoBehaviour {
 
-    public GameObject ObstaclePrefab;
     public Vector3 SpawnLocation;
+    public List<GameObject> SpawnableObjects;
 
+    private Random random = new Random();
 
-	// Use this for initialization
-	void Start () {
-        Instantiate(ObstaclePrefab, SpawnLocation, Quaternion.identity);
+	void FixedUpdate ()
+    {
+        var obj = SpawnableObjects[Random.Range(0, SpawnableObjects.Count)];
+
+        if (Spawnable())
+        {
+            SpawnObject();
+        }
     }
-	
-	// Update is called once per frame
-	void Update () {
-        
+
+    private bool Spawnable()
+    {
+        return GameObject.FindGameObjectsWithTag("Obstacle").Length < 3;
+    }
+
+    private void SpawnObject()
+    {
+        //combine spawnable objects from SpawnableObjects
+        //with whatever is fetched from API
     }
 }
