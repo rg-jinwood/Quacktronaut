@@ -1,18 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Obstacle : MonoBehaviour {
-
+public class Obstacle : MonoBehaviour
+{
     public Vector2 velocity;
 
-    // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         GetComponent<Rigidbody2D>().velocity = velocity;
     }
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    private void OnBecameInvisible()
+    {
+        Destroy(gameObject);
+    }
 }
