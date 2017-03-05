@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class ObstacleSpawner : MonoBehaviour {
 
-    public Vector3 SpawnLocation;
-    public List<GameObject> SpawnableObjects;
+    public Vector3 spawnLocation;
+    public List<GameObject> spawnableObjects;
     bool isSpawning = false;
     public float minTime = 1.0f;
     public float maxTime = 3.0f;
@@ -31,7 +31,7 @@ public class ObstacleSpawner : MonoBehaviour {
         if (!isSpawning)
         {
             isSpawning = true;
-            int enemyIndex = Random.Range(0, SpawnableObjects.Count);
+            int enemyIndex = Random.Range(0, spawnableObjects.Count);
             StartCoroutine(SpawnObject(enemyIndex, Random.Range(minTime, maxTime)));
             //InvokeRepeating("SpawnObject", 1, 1);}
         }
@@ -45,17 +45,26 @@ public class ObstacleSpawner : MonoBehaviour {
 
     private IEnumerator SpawnObject(int index, float seconds)
     {
-            if (Spawnable())
+        if (Spawnable())
+        {
+            Debug.Log("Waiting for " + seconds + " seconds");
+
+            yield return new WaitForSeconds(seconds);
+            var obj = spawnableObjects[Random.Range(0, spawnableObjects.Count)];
+
+            if (revisions.data != null && revisions.data.Count > 0)
             {
-                Debug.Log("Waiting for " + seconds + " seconds");
+                if(Random.Range(0,1) == 1)
+                {
 
-                yield return new WaitForSeconds(seconds);
-                var obj = SpawnableObjects[Random.Range(0, SpawnableObjects.Count)];
-                Instantiate(obj, SpawnLocation, Quaternion.identity);
+                }
+            }
 
-                //We've spawned, so now we could start another spawn     
-                isSpawning = false;
-            } 
+            Instantiate(obj, spawnLocation, Quaternion.identity);
+
+            //We've spawned, so now we could start another spawn     
+            isSpawning = false;
+        }
         //combine spawnable objects from SpawnableObjects
         //with whatever is fetched from API
     }

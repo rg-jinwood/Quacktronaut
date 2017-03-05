@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Helpers
@@ -17,8 +18,6 @@ namespace Assets.Scripts.Helpers
 
             var url = string.Format("{0}{1}", Contstants.ApiUrl, Contstants.RevisionUrl);
             var request = new WWW(url, null, headers);
-            //request.SetRequestHeader("Authorization", bearer);
-            //var x = request.GetRequestHeader("Authorization");
 
             yield return request;
 
@@ -29,8 +28,16 @@ namespace Assets.Scripts.Helpers
             else
             {
                 var revisions = SerializationHelper.Deserialize<RevisionModel>(request.text);
+                revisions = SortRevisions(revisions);
                 success(revisions);
             }
+        }
+
+        private static RevisionModel SortRevisions(RevisionModel model)
+        {
+            model.data.OrderByDescending(d => d.spaced_correct_run_length).OrderByDescending(d => d.due_for_revision);
+
+            return model;
         }
     }
 }
