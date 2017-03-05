@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Helpers;
+using Assets.Scripts.Models;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +13,18 @@ public class ObstacleSpawner : MonoBehaviour {
     public float maxTime = 3.0f;
 
     private Random random = new Random();
+    private RevisionModel revisions;
+
+    private void Start()
+    {
+        var token = PlayerPrefs.GetString("token");
+        StartCoroutine(RevisionHelper.GetLatestRevision(token, GetRevisions));
+    }
+
+    private void GetRevisions(RevisionModel model)
+    {
+        revisions = model;
+    }
 
     private void Update()
     {

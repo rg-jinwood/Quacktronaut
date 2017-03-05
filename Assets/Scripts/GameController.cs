@@ -1,16 +1,16 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Helpers;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    public GameObject PlayerObject;
-
 	void Start ()
     {
-        StartLevel();
-	}
+        var token = PlayerPrefs.GetString("token");
 
-    public void StartLevel()
-    {
-        Instantiate(PlayerObject);
+        if(string.IsNullOrEmpty(token))
+            SceneManager.LoadScene(0); //if we're missing the token go back to the main menu
+
     }
+
 }
