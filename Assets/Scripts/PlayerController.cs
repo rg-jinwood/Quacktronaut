@@ -6,12 +6,11 @@ public class PlayerController : MonoBehaviour {
     public Vector2 JumpForce = new Vector2(0, 300);
     public ObstacleSpawner spawner;
 
-    // Update is called once per frame
-    void FixedUpdate() {
+    void Update() {
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 0, 0);
         var player = GetComponent<Rigidbody2D>();
         
-        if (Input.GetKeyDown("space"))
+        if (Input.GetKeyDown("up"))
         {
             player.velocity = Vector2.zero;
             player.AddForce(JumpForce);
@@ -26,11 +25,14 @@ public class PlayerController : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        //Die();
+        if (other.gameObject.tag == "Word Obstacle")
+            return;
+        Die();
     }
 
     void Die()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        PlayerState.IsAlive = false;
+        Time.timeScale = 0f;
     }
 }

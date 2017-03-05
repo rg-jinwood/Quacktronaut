@@ -8,7 +8,7 @@ public class Obstacle : MonoBehaviour
 
     void Start ()
     {
-        spinSpeed = Random.Range(-5, 5);
+        spinSpeed = Random.Range(-15, 15);
         var spawnerObject = GameObject.FindWithTag("GameController");
         spawner = spawnerObject.GetComponent<ObstacleSpawner>();
         GetComponent<Rigidbody2D>().velocity = velocity;

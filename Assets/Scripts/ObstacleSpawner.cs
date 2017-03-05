@@ -13,12 +13,14 @@ public class ObstacleSpawner : MonoBehaviour {
     public List<GameObject> spawnableObjects;
     bool isSpawning = false;
     public float minTime = 1.0f;
-    public float maxTime = 3.0f;
+    public float maxTime = 2.0f;
+    public Text score;
 
     private Random random = new Random();
     private List<RevisionDatum> revisions;
     private RevisionDatum selectedRevision;
     private float notSpawningCounter;
+    private int scoreCount;
 
     public void CheckWordCollision(GameObject wordObject)
     {
@@ -28,21 +30,17 @@ public class ObstacleSpawner : MonoBehaviour {
 
         foreach (var component in wordObject.GetComponentsInChildren<Text>())
         {
-            if (component.name == "Answer")
-            {
-                if(component.text == selectedAnswer) //correct
-                {
-                    Debug.Log("Correct!!!");
-                    //update api
-                    revisions.Remove(selectedRevision);
-                    selectedRevision = revisions.FirstOrDefault();
+            var correct = RevisionAnswerHandler.IsCorrect(selectedAnswer, possibleWrongAnswers, component);
 
-                }
-                if (possibleWrongAnswers.Contains(component.text)) //wrong
-                {
-                    Debug.Log("Wrong!!!");
-                    selectedRevision.wrong_answers.Remove(component.text);
-                }
+            if (correct)
+            {
+                revisions.Remove(selectedRevision);
+                selectedRevision = revisions.FirstOrDefault();
+                scoreCount += 1;
+            }
+            else
+            {
+                selectedRevision.wrong_answers.Remove(component.text);
             }
         }
         Destroy(wordObject);
@@ -50,6 +48,7 @@ public class ObstacleSpawner : MonoBehaviour {
 
     private void Start()
     {
+        scoreCount = 0;
         var token = PlayerPrefs.GetString("token");
         if(revisions == null)
             StartCoroutine(RevisionHelper.GetLatestRevision(token, GetRevisions));
@@ -63,6 +62,7 @@ public class ObstacleSpawner : MonoBehaviour {
 
     private void Update()
     {
+        score.text = scoreCount.ToString(); ;
         if (!isSpawning)
         {
             notSpawningCounter = 0f;

@@ -1,13 +1,31 @@
 ﻿using Assets.Scripts.Models;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Handlers
 {
     public static class RevisionAnswerHandler
     {
-        public static void IsCorrectAnswer()
+        public static bool IsCorrect(string selectedAnswer, List<string> possibleWrongAnswers, Text component)
         {
+            if (component.name == "Answer")
+            {
+                if (component.text == selectedAnswer) //correct
+                {
+                    Debug.Log("Correct!!!");
+                    return true;
+                    //ToDo: update api
 
+                }
+                if (possibleWrongAnswers.Contains(component.text)) //wrong
+                {
+                    Debug.Log("Wrong!!!");
+                    return false;                    
+                }
+            }
+
+            return false;
         }
 
         public static string GenerateAnswer(RevisionDatum datum)
