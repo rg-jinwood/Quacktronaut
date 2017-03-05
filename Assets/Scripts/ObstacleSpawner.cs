@@ -79,7 +79,7 @@ public class ObstacleSpawner : MonoBehaviour {
 
     private bool Spawnable()
     {
-        return GameObject.FindGameObjectsWithTag("Obstacle").Length < 3;
+        return GameObject.FindGameObjectsWithTag("Obstacle").Length < 4;
     }
 
     private bool SceneDoesntContainWordObstacle()
@@ -97,7 +97,7 @@ public class ObstacleSpawner : MonoBehaviour {
 
             if (selectedRevision != null && SceneDoesntContainWordObstacle())
             {
-                if(Random.Range(0,3) == 0)
+                if(Random.Range(0,2) == 0)
                 {
                     spawnLocation = new Vector3(12, 12, 0);
                     obj = spawnableObjects.FirstOrDefault(x => x.tag == "Word Obstacle");

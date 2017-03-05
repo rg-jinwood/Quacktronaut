@@ -27,6 +27,10 @@ public class PlayerController : MonoBehaviour {
     {
         if (other.gameObject.tag == "Word Obstacle")
             return;
+
+        if (other.gameObject.tag == "Untagged")
+            return;
+
         Die();
     }
 
