@@ -23,7 +23,7 @@ namespace Assets.Scripts.Models
         public string text { get; set; }
     }
 
-    public class Datum
+    public class RevisionDatum
     {
         public int absolute_correct_run_length { get; set; }
         public int bit_id { get; set; }
@@ -37,6 +37,6 @@ namespace Assets.Scripts.Models
 
     public class RevisionModel
     {
-        public List<Datum> data { get; set; }
+        public List<RevisionDatum> data { get; set; }
     }
 }

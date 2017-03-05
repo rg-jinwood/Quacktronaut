@@ -4,10 +4,13 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour {
 
     public Vector2 JumpForce = new Vector2(0, 300);
+    public ObstacleSpawner spawner;
 
-	// Update is called once per frame
-	void FixedUpdate() {
+    // Update is called once per frame
+    void FixedUpdate() {
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 0, 0);
         var player = GetComponent<Rigidbody2D>();
+        
         if (Input.GetKeyDown("space"))
         {
             player.velocity = Vector2.zero;
@@ -23,7 +26,7 @@ public class PlayerController : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        Die();
+        //Die();
     }
 
     void Die()

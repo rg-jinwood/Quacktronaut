@@ -1,8 +1,11 @@
-﻿using Assets.Scripts.Helpers;
+﻿using Assets.Scripts.Handlers;
+using Assets.Scripts.Helpers;
 using Assets.Scripts.Models;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ObstacleSpawner : MonoBehaviour {
 
@@ -13,59 +16,111 @@ public class ObstacleSpawner : MonoBehaviour {
     public float maxTime = 3.0f;
 
     private Random random = new Random();
-    private RevisionModel revisions;
+    private List<RevisionDatum> revisions;
+    private RevisionDatum selectedRevision;
+    private float notSpawningCounter;
+
+    public void CheckWordCollision(GameObject wordObject)
+    {
+        var selectedWord = selectedRevision.variant.text;
+        var selectedAnswer = selectedRevision.translation.text;
+        var possibleWrongAnswers = selectedRevision.wrong_answers;
+
+        foreach (var component in wordObject.GetComponentsInChildren<Text>())
+        {
+            if (component.name == "Answer")
+            {
+                if(component.text == selectedAnswer) //correct
+                {
+                    Debug.Log("Correct!!!");
+                    //update api
+                    revisions.Remove(selectedRevision);
+                    selectedRevision = revisions.FirstOrDefault();
+
+                }
+                if (possibleWrongAnswers.Contains(component.text)) //wrong
+                {
+                    Debug.Log("Wrong!!!");
+                    selectedRevision.wrong_answers.Remove(component.text);
+                }
+            }
+        }
+        Destroy(wordObject);
+    }
 
     private void Start()
     {
         var token = PlayerPrefs.GetString("token");
-        StartCoroutine(RevisionHelper.GetLatestRevision(token, GetRevisions));
+        if(revisions == null)
+            StartCoroutine(RevisionHelper.GetLatestRevision(token, GetRevisions));
     }
 
     private void GetRevisions(RevisionModel model)
     {
-        revisions = model;
+        revisions = model.data;
+        selectedRevision = revisions.FirstOrDefault();
     }
 
     private void Update()
     {
         if (!isSpawning)
         {
+            notSpawningCounter = 0f;
             isSpawning = true;
-            int enemyIndex = Random.Range(0, spawnableObjects.Count);
-            StartCoroutine(SpawnObject(enemyIndex, Random.Range(minTime, maxTime)));
-            //InvokeRepeating("SpawnObject", 1, 1);}
+            StartCoroutine(SpawnObject(Random.Range(minTime, maxTime)));
+        }
+        if (notSpawningCounter > 2) //ensure we don't get stuck on not spawning
+            isSpawning = false;
+        else
+        {
+            notSpawningCounter += Time.deltaTime;
         }
     }
 
     private bool Spawnable()
     {
-        var x = GameObject.FindGameObjectsWithTag("Obstacle");
         return GameObject.FindGameObjectsWithTag("Obstacle").Length < 3;
     }
 
-    private IEnumerator SpawnObject(int index, float seconds)
+    private bool SceneDoesntContainWordObstacle()
+    {
+        return GameObject.FindGameObjectsWithTag("Word Obstacle").Length == 0;
+    }
+
+    private IEnumerator SpawnObject(float seconds)
     {
         if (Spawnable())
         {
-            Debug.Log("Waiting for " + seconds + " seconds");
-
             yield return new WaitForSeconds(seconds);
-            var obj = spawnableObjects[Random.Range(0, spawnableObjects.Count)];
+            var obj = spawnableObjects.FirstOrDefault(x => x.tag == "Obstacle");
+            spawnLocation = new Vector3(12, Random.Range(-8, 12), 0);
 
-            if (revisions.data != null && revisions.data.Count > 0)
+            if (selectedRevision != null && SceneDoesntContainWordObstacle())
             {
-                if(Random.Range(0,1) == 1)
+                if(Random.Range(0,3) == 0)
                 {
-
+                    spawnLocation = new Vector3(12, 12, 0);
+                    obj = spawnableObjects.FirstOrDefault(x => x.tag == "Word Obstacle");
+                    foreach(var component in obj.GetComponentsInChildren<Text>())
+                    {
+                        if (component.name == "Word")
+                            component.text = selectedRevision.variant.text;
+                        if (component.name == "Answer")
+                        {
+                            var answer = RevisionAnswerHandler.GenerateAnswer(selectedRevision);
+                            component.text = answer;
+                        }
+                    }
                 }
             }
+            //if the scene contains a word obstacle, don't spawn any standard obstacles at that height
+            if (GameObject.FindGameObjectsWithTag("Word Obstacle").Length > 0) 
+                spawnLocation = new Vector3(12, Random.Range(-8, 8), 0);
 
             Instantiate(obj, spawnLocation, Quaternion.identity);
 
             //We've spawned, so now we could start another spawn     
             isSpawning = false;
         }
-        //combine spawnable objects from SpawnableObjects
-        //with whatever is fetched from API
     }
 }

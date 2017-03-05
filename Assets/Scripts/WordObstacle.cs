@@ -1,23 +1,17 @@
 ﻿using UnityEngine;
 
-public class Obstacle : MonoBehaviour
+public class WordObstacle : MonoBehaviour
 {
     public Vector2 velocity;
     private ObstacleSpawner spawner;
-    private float spinSpeed;
 
-    void Start ()
+    void Start()
     {
-        spinSpeed = Random.Range(-5, 5);
         var spawnerObject = GameObject.FindWithTag("GameController");
         spawner = spawnerObject.GetComponent<ObstacleSpawner>();
         GetComponent<Rigidbody2D>().velocity = velocity;
     }
 
-    private void FixedUpdate()
-    {
-        transform.Rotate(0, 0, spinSpeed * Time.deltaTime);
-    }
 
     private void OnBecameInvisible()
     {
@@ -26,6 +20,13 @@ public class Obstacle : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        Destroy(gameObject);
+        if (other.gameObject.tag == "Despawner") //don't destroy if its the player's collider
+            Destroy(gameObject);
+
+        if (other.gameObject.tag == "Player")
+        {
+            spawner.CheckWordCollision(gameObject);
+        }
+
     }
 }
