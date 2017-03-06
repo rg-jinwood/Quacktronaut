@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
@@ -31,12 +32,13 @@ public class PlayerController : MonoBehaviour {
         if (other.gameObject.tag == "Untagged")
             return;
 
+
         Die();
     }
 
     void Die()
     {
+        Destroy(gameObject);
         PlayerState.IsAlive = false;
-        Time.timeScale = 0f;
     }
 }

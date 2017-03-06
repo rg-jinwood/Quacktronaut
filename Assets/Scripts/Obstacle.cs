@@ -3,6 +3,7 @@
 public class Obstacle : MonoBehaviour
 {
     public Vector2 velocity;
+
     private ObstacleSpawner spawner;
     private float spinSpeed;
 
@@ -26,6 +27,6 @@ public class Obstacle : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 }
